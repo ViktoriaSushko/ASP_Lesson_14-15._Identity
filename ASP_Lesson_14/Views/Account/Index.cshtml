@@ -1,0 +1,48 @@
+﻿@using ASP_Lesson_14.Models.Data
+@model IEnumerable<ShopUser>
+<p>
+    <a asp-action="Register" method="post">Create new user</a>
+</p>
+<table class="table table-dark">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(t=>t.First().Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(t => t.First().UserName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(t => t.First().Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(t => t.First().DateOfBirth)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>
+                @user.Id
+                </td>
+                <td>
+                    @user.UserName
+                </td>
+                <td>
+                    @user.Email
+                </td>
+                <td>
+                    @user.DateOfBirth
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@user.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@user.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@user.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

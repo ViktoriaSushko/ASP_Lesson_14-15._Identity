@@ -1,0 +1,7 @@
+﻿@model IEnumerable<ASP_Lesson_14.Models.Category>
+
+<div class="form-group">
+    <select name="ParentCategoryId[]" class="form-control" asp-items="@(new SelectList(Model,"Id","CategoryName"))">
+        <option value="0">None</option>
+    </select>
+</div>

@@ -40,6 +40,10 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
-
+app.MapControllerRoute(
+    name: "childCategory",
+    pattern: "category/GetChildCategories/{parentId:int?}",
+    defaults: new { controller = "Category", action = "GetChildCategories" }
+    );
 
 app.Run();

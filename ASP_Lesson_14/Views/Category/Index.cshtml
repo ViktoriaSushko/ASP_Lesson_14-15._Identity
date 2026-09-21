@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ASP_Lesson_14.Models.Brand>
+@model IEnumerable<ASP_Lesson_14.Models.Category>
 
 @{
     ViewData["Title"] = "Index";
@@ -13,14 +13,20 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.BrandName)
+                @Html.DisplayNameFor(model => model.CategoryName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Country)
+                @Html.DisplayNameFor(model => model.ParentCategoryId)
             </th>
-        @*     <th>
+            <th>
+                @Html.DisplayNameFor(model => model.ParentCategory)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ChildCategories)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Products)
-            </th> *@
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -28,14 +34,20 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(model => item.BrandName)
+                @Html.DisplayFor(model => item.CategoryName)
             </td>
             <td>
-                @Html.DisplayFor(model => item.Country)
+                @Html.DisplayFor(model => item.ParentCategoryId)
             </td>
-          @*   <td>
+            <td>
+                @Html.DisplayFor(model => item.ParentCategory)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.ChildCategories)
+            </td>
+            <td>
                 @Html.DisplayFor(model => item.Products)
-            </td> *@
+            </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |

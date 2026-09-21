@@ -10,7 +10,7 @@ namespace ASP_Lesson_14.Models
         public string BrandName { set; get; }
         [Required]
         public string? Country { set; get; }
-        public ICollection<Product> Products { set; get; }
+        public ICollection<Product>? Products { set; get; }
 
     }
 }

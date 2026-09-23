@@ -17,7 +17,18 @@ builder.Services.AddIdentity<ShopUser, IdentityRole>(options =>
     options.Password.RequiredLength = 6;
 
 }).AddEntityFrameworkStores<ShopDbContext>();
+builder.Services.AddAuthentication().AddGoogle(options =>
+{
+    var googleAuthSection = builder.Configuration.GetSection("Authentication:Google");
+    options.ClientId = googleAuthSection["ClientId"];
+    options.ClientSecret = googleAuthSection["ClientSecret"];
+}).AddGitHub(gitHubOptions=>
+{
+    gitHubOptions.ClientId = "Ov23li5O7KbBrO6vjXar";
+    gitHubOptions.ClientSecret = "a72fccebe8a5dfcf59f2f3081822fa6006bf24a9";
 
+
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

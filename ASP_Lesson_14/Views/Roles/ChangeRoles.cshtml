@@ -1,0 +1,33 @@
+﻿@model ASP_Lesson_14.Models.ViewModels.Roles.ChangeRoleViewModel
+
+@{
+    ViewData["Title"] = "Change roles";
+}
+
+<h1>Create</h1>
+
+<h4>RoleViewModel</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="ChangeRoles">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            @foreach  (string? roleName in Model.AllRoles!)
+                {
+                <div class="form-group">               
+                    <input name="roles" value="@roleName" type="checkbox" class="form-check-input" @(Model.UserRoles!.Contains(roleName)?"checked":"")/> 
+                    <span>@Html.Raw("&nbsp;&nbsp;") @roleName</span>
+                </div>
+                }
+           
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>

@@ -117,12 +117,15 @@ namespace ASP_Lesson_14.Controllers
                 return RedirectToAction("Login");
             var signInResult = await signInManager.ExternalLoginSignInAsync(externalLoginInfo.LoginProvider,
                 externalLoginInfo.ProviderKey, false);
+            var email = externalLoginInfo.Principal?.FindFirst(ClaimTypes.Email)?.Value;
             string?[] userInfo = new[] {
             externalLoginInfo.Principal?.FindFirst(ClaimTypes.Name)?.Value,
-            externalLoginInfo.Principal?.FindFirst(ClaimTypes.Email)?.Value};
+            email
+            };          
             if (signInResult.Succeeded)
                 return View(userInfo);        
-            ShopUser? user = await userManager.FindByNameAsync(userInfo[0]);
+            //ShopUser? user = await userManager.FindByNameAsync(userInfo[0]);
+            ShopUser? user = await userManager.FindByEmailAsync(userInfo[1]);
             if (user == null)
             {
                 user = new ShopUser

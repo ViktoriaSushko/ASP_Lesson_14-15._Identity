@@ -1,6 +1,7 @@
 ﻿using ASP_Lesson_14.Models.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,17 @@ builder.Services.AddIdentity<ShopUser, IdentityRole>(options =>
     options.Password.RequiredLength = 6;
 
 }).AddEntityFrameworkStores<ShopDbContext>();
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.User.AllowedUserNameCharacters =
+        "abcdefghijklmnopqrstuvwxyz" +
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+        "абвгдеёжзийклмнопрстуфхцчшщъыьэюя" +
+        "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ" +
+        "іІїЇєЄґҐ" +
+        "0123456789" +
+        "-._@+ ";
+}); ;
 builder.Services.AddAuthentication().AddGoogle(options =>
 {
     var googleAuthSection = builder.Configuration.GetSection("Authentication:Google");
@@ -24,10 +36,10 @@ builder.Services.AddAuthentication().AddGoogle(options =>
     options.ClientSecret = googleAuthSection["ClientSecret"];
 }).AddGitHub(gitHubOptions=>
 {
-    gitHubOptions.ClientId = "Ov23li5O7KbBrO6vjXar";
-    gitHubOptions.ClientSecret = "a72fccebe8a5dfcf59f2f3081822fa6006bf24a9";
-
-
+    gitHubOptions.ClientId = "Ov23li3DwHFVGT4hsUXx";
+    gitHubOptions.ClientSecret = "06885b070a7816e910d69f505f4f64552dd0a734";
+    gitHubOptions.CallbackPath = "/signin-github";
+    gitHubOptions.Scope.Add("user:email"); 
 });
 var app = builder.Build();
 

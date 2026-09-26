@@ -1,4 +1,6 @@
 ﻿using ASP_Lesson_14.Models.Data;
+using ASP_Lesson_14.Models.DTO.Claims.CustomerPolicies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -7,6 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddTransient<IAuthorizationRequirement, AllowedAgeRequirement>();
+builder.Services.AddTransient<IAuthorizationHandler, AllowedAgeHandler>();
 //IdentityDbContext
 string connStr = builder.Configuration.GetConnectionString("DefaultConnection")??throw new InvalidOperationException("Connection string wasn't provided!");
 builder.Services.AddDbContext<ShopDbContext>(options => options.UseSqlServer(connStr));
@@ -40,6 +44,18 @@ builder.Services.AddAuthentication().AddGoogle(options =>
     gitHubOptions.ClientSecret = "06885b070a7816e910d69f505f4f64552dd0a734";
     gitHubOptions.CallbackPath = "/signin-github";
     gitHubOptions.Scope.Add("user:email"); 
+});
+
+builder.Services.AddAuthorization(configure =>
+{
+    configure.AddPolicy("dotnetUsersOnly", configurePolicy =>
+    {
+        configurePolicy.RequireClaim("PrefferedFramework", "ASP.Net Core", ".Net MAUI");
+    });
+    configure.AddPolicy("minAgePolicy", configurePolicy =>
+    {
+        configurePolicy.Requirements.Add(new AllowedAgeRequirement { MinAge=18});
+    });
 });
 var app = builder.Build();
 

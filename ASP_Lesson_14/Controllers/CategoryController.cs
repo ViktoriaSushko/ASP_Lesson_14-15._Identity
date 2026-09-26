@@ -1,10 +1,11 @@
 ﻿
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using ASP_Lesson_14.Models;
 using ASP_Lesson_14.Models.Data;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-
+using Microsoft.EntityFrameworkCore;
+[Authorize(Roles = "admin, manager")]
 public class CategoryController : Controller
 {
     private readonly ShopDbContext _context;
@@ -15,6 +16,7 @@ public class CategoryController : Controller
     }
 
     // GET: CATEGORY
+    [Authorize(Policy = "minAgePolicy")]
     public async Task<IActionResult> Index()    
     {
         var categories = _context.Categories.Include(c => c.ParentCategory);
@@ -40,6 +42,7 @@ public class CategoryController : Controller
     }
 
     // GET: CATEGORY/Create
+    [Authorize(Policy ="dotnetUsersOnly")]
     public async Task<IActionResult> Create()
     {
         var categories = await _context.Categories.Where(c => c.ParentCategoryId == null).ToListAsync();

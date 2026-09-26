@@ -3,6 +3,7 @@ using ASP_Lesson_14.Models.DTO.User;
 using Humanizer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -11,9 +12,11 @@ namespace ASP_Lesson_14.Controllers
     public class UsersController : Controller
     {
         private readonly UserManager<ShopUser> userManager;
-        public UsersController(UserManager<ShopUser> userManager)
+        private readonly RoleManager<IdentityRole> roleManager;
+        public UsersController(UserManager<ShopUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             this.userManager = userManager;
+            this.roleManager = roleManager;
         }
         public async Task<IActionResult> Index()
         {
@@ -21,6 +24,7 @@ namespace ASP_Lesson_14.Controllers
         }
         public IActionResult Create()
         {
+            ViewBag.Roles = new SelectList(roleManager.Roles, "Name", "Name");
             return View();
         }
         [HttpPost]
@@ -37,6 +41,8 @@ namespace ASP_Lesson_14.Controllers
                 IdentityResult result = await userManager.CreateAsync(user, dto.Password);
                 if (result.Succeeded)
                 {
+                    if (!string.IsNullOrEmpty(dto.Role))
+                        await userManager.AddToRoleAsync(user, dto.Role);
                     return RedirectToAction("Index", "Users");
                 }
                 else
@@ -47,19 +53,23 @@ namespace ASP_Lesson_14.Controllers
                     }
                 }
             }
+            ViewBag.Roles = new SelectList(roleManager.Roles, "Name", "Name");
             return View(dto);
         }
         public async Task<IActionResult> Edit(string id)
         {
             ShopUser? user = await userManager.FindByIdAsync(id);
             if (user == null) return NotFound();
+           var roleUser = await userManager.GetRolesAsync(user);
             EditUserDTO dto = new EditUserDTO
             {
                 Id = user.Id,
                 Login = user.UserName ?? "",
                 Email = user.Email ?? "",
-                DateOfBirth = user.DateOfBirth
+                DateOfBirth = user.DateOfBirth,
+                Role=roleUser.FirstOrDefault()
             };
+            ViewBag.Roles = new SelectList(roleManager.Roles, "Name", "Name", dto.Role);
             return View(dto);
         }
         [HttpPost]
@@ -75,6 +85,12 @@ namespace ASP_Lesson_14.Controllers
                 IdentityResult result = await userManager.UpdateAsync(user);
                 if (result.Succeeded)
                 {
+                    var currentRoles = await userManager.GetRolesAsync(user);
+                    if (!string.IsNullOrEmpty(dto.Role) && !currentRoles.Contains(dto.Role))
+                    {
+                        await userManager.RemoveFromRolesAsync(user, currentRoles);
+                        await userManager.AddToRoleAsync(user, dto.Role);
+                    }
                     return RedirectToAction("Index");
                 }
                 else
@@ -85,6 +101,7 @@ namespace ASP_Lesson_14.Controllers
                     }
                 }
             }
+            ViewBag.Roles = new SelectList(roleManager.Roles, "Name", "Name",dto.Role);
             return View(dto);
         }
         public async Task<IActionResult> Delete(string? id)
@@ -132,6 +149,7 @@ namespace ASP_Lesson_14.Controllers
             if (id == "") return NotFound();
             var user = await userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
             if (user == null) return NotFound();
+            ViewBag.Roles = await userManager.GetRolesAsync(user);
             return View(user);
 
         }

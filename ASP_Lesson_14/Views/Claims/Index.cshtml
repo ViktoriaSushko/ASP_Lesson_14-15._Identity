@@ -1,0 +1,54 @@
+﻿@using System.Security.Claims
+@model IEnumerable<Claim>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Current user claims</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Type)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ValueType)
+            </th>
+                <th>
+                @Html.DisplayNameFor(model => model.Value)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Issuer)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var claim in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(model => claim.Type)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => claim.ValueType)
+                </td>
+                <td>
+                @Html.DisplayFor(model => claim.Value)
+            </td> 
+                <td>
+                    @Html.DisplayFor(model => claim.Issuer)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-claimInfo="@($"{claim.Type};{ClaimValueTypes.String};{claim.Value}")">Edit</a> |
+                    <a asp-action="Delete" asp-route-claimInfo="@($"{claim.Type};{ClaimValueTypes.String};{claim.Value}")">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

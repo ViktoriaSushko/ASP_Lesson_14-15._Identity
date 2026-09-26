@@ -31,9 +31,18 @@
             @Html.DisplayFor(model => model.DateOfBirth)
         </dd>
      </dl>    
+    <dl class="row">
+        <dt class="col-sm-2">
+           Роль користувача:
+        </dt>
+        <dd class="col-sm-10">
+            @string.Join(",", (IEnumerable<string>)ViewBag.Roles)
+        </dd>
+    </dl>
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="ChangeRoles" asp-controller="Roles" asp-route-id="@Model.Id">Change role</a>|
     <a asp-action="Index">Back to List</a>
 </div>
 

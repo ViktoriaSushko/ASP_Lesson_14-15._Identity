@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ASP_Lesson_14.Models;
 using ASP_Lesson_14.Models.Data;
-
+using Microsoft.AspNetCore.Authorization;
+[Authorize(Roles ="admin, manager")]
 public class BrandController : Controller
 {
     private readonly ShopDbContext _context;

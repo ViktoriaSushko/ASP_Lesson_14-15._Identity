@@ -15,5 +15,7 @@ namespace ASP_Lesson_14.Models.DTO.User
         [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; } = default;
+        //add Role
+        public string Role { get; set; }
     }
 }

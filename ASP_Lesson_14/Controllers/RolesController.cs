@@ -8,7 +8,7 @@ using System.Data;
 
 namespace ASP_Lesson_14.Controllers
 {
-    [Authorize(Roles="admin, manager")]
+    [Authorize(Roles="admin")]
     public class RolesController : Controller
     {
         private readonly UserManager<ShopUser> userManager;

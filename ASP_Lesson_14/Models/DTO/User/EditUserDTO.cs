@@ -12,6 +12,7 @@ namespace ASP_Lesson_14.Models.DTO.User
         public string Email { get; set; } = default;
         [DataType(DataType.Date)]
         public DateTime DateOfBirth { get; set; }
+        public string? Role { get; set; } 
        
     }
 }

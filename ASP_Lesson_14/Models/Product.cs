@@ -8,7 +8,9 @@ namespace ASP_Lesson_14.Models
         public int Id { set; get; }
         [Display(Name = "Product name: ")]
         [Required]
-        public string ProductName { set; get; }
+        public string Name { get; set; } = default!;
+        [Required]
+        public decimal Price { get; set; }
         public string? Description {set;get;}
         public int BrandId { set; get; }
         [ForeignKey(nameof(BrandId))]

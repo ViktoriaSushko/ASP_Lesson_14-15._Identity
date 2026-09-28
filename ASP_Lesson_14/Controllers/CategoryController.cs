@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-[Authorize(Roles = "admin, manager")]
+//[Authorize(Roles = "admin, manager")]
 public class CategoryController : Controller
 {
     private readonly ShopDbContext _context;
@@ -16,7 +16,7 @@ public class CategoryController : Controller
     }
 
     // GET: CATEGORY
-    [Authorize(Policy = "minAgePolicy")]
+    //[Authorize(Policy = "minAgePolicy")]
     public async Task<IActionResult> Index()    
     {
         var categories = _context.Categories.Include(c => c.ParentCategory);
@@ -42,7 +42,7 @@ public class CategoryController : Controller
     }
 
     // GET: CATEGORY/Create
-    [Authorize(Policy ="dotnetUsersOnly")]
+    //[Authorize(Policy ="dotnetUsersOnly")]
     public async Task<IActionResult> Create()
     {
         var categories = await _context.Categories.Where(c => c.ParentCategoryId == null).ToListAsync();
@@ -55,24 +55,26 @@ public class CategoryController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Id,CategoryName,ParentCategoryId,ParentCategory,ChildCategories,Products")] Category category, int[] parentCategoryId)
+    public async Task<IActionResult> Create([Bind("Id,CategoryName,ParentCategoryId")] Category category, int[] parentCategoryId)
     {
         if (ModelState.IsValid)
         {
             if (parentCategoryId.Length == 1 && parentCategoryId[0] == 0)
-            {
                 category.ParentCategoryId = null;
-            }
             else
+
                 if (parentCategoryId[parentCategoryId.Length - 1] != 0)
+
                     category.ParentCategoryId = parentCategoryId[parentCategoryId.Length - 1];
-            else
+                else
+
                     category.ParentCategoryId = parentCategoryId[parentCategoryId.Length - 2];
+
             _context.Add(category);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        ViewData["ParentCategoryId"] = new SelectList(_context.Categories, "Id", "CategoryName",category.ParentCategoryId);
+        ViewData["ParentCategoryId"] = new SelectList(_context.Categories, "Id", "CategoryName", category.ParentCategoryId);
         return View(category);
     }
     public async Task<IActionResult> GetChildCategories(int parentId)
@@ -101,7 +103,7 @@ public class CategoryController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? id, [Bind("Id,CategoryName,ParentCategoryId,ParentCategory,ChildCategories,Products")] Category category)
+    public async Task<IActionResult> Edit(int? id, [Bind("Id,CategoryName,ParentCategoryId")] Category category)
     {
         if (id != category.Id)
         {
@@ -128,6 +130,7 @@ public class CategoryController : Controller
             }
             return RedirectToAction(nameof(Index));
         }
+        ViewData["ParentCategoryId"] = new SelectList(_context.Categories, "Id", "CategoryName", category.ParentCategoryId);
         return View(category);
     }
 

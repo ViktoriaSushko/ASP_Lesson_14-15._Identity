@@ -1,4 +1,5 @@
-﻿using ASP_Lesson_14.Models.Data;
+﻿using ASP_Lesson_14.AutomapperProfile;
+using ASP_Lesson_14.Models.Data;
 using ASP_Lesson_14.Models.DTO.Claims.CustomerPolicies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -9,6 +10,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddAutoMapper(cfg =>
+{
+    cfg.AddProfile<ProductProfile>();
+});
 builder.Services.AddTransient<IAuthorizationRequirement, AllowedAgeRequirement>();
 builder.Services.AddTransient<IAuthorizationHandler, AllowedAgeHandler>();
 //IdentityDbContext

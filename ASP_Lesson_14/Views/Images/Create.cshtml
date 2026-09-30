@@ -1,0 +1,103 @@
+﻿@using ASP_Lesson_14.Models.ViewModels.Images
+@model CreateImageVM
+
+@{
+    ViewData["Title"] = "Create";
+}
+<h1>Create</h1>
+<h4>Images</h4>
+<hr>
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" enctype="multipart/form-data" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="mb-3">
+                <label for="categoryId" class="control-label">Category</label>
+                <select name="categoryId" id="categoryId" class="form-control" asp-items="Model.Categories"
+                        onchange="onCategoryChange(event)">
+                    <option value="0">All</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <input type="file" accept="image/*" multiple name="photos" id="photosInp" class="form-control">
+                <label for="photosInp" class="control-label">Upload photos</label>
+            </div>
+            <div class="mb-3">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+@section Scripts {
+        <script type="text/javascript">
+
+        var catId;
+        var brandId;
+        async function onCategoryChange(e) {
+            let categoryId = e.target.value;
+            catId = categoryId;
+            let text = await getBrandsByCategory(categoryId);
+            console.log("-------------------");
+            console.log(text);
+            let div = document.createElement("div");
+            let categoriesDiv = e.target.parentElement;
+            div.innerHTML = text;
+            let brandsDiv = document.getElementById("brandsDiv");
+            if (brandsDiv) {
+                brandsDiv.replaceWith(div.firstElementChild);
+                let productsDiv = document.getElementById("productsDiv");
+                if (productsDiv)
+                    productsDiv.remove();
+            }
+            else categoriesDiv.after(div.firstChild);
+        }
+        async function getBrandsByCategory(categoryId) {
+            let resp = await fetch(`/images/getBrandsByCategory/${categoryId}`, {
+                method: "post",
+                headers: {
+                    "accept": "text/html"
+                }
+            });
+            if (resp.ok === true) {
+                let textData = await resp.text();
+                console.log(textData);
+                return textData;
+            }
+        }
+        async function onBrandChange(e) {
+            let brandId = e.target.value;
+            console.log(brandId);
+            let text = await getProducts(catId, brandId);
+            let div = document.createElement("div");
+            div.innerHTML = text;
+            let productsDiv = document.getElementById("productsDiv");
+            let brandsDiv = document.getElementById("brandsDiv");
+            if (productsDiv)
+                productsDiv.replaceWith(div.firstElementChild);
+            else brandsDiv.after(div.firstChild);
+        }
+        async function getProducts(categoryId, brandId) {
+            let bodyData = JSON.stringify({
+                categoryId: categoryId,
+                brandId: brandId
+            });
+            console.log(bodyData);
+            let resp = await fetch("/images/getProducts", {
+                method: "post",
+                headers: {
+                    "content-type": "application/json",
+                    "accept": "text/html"
+                },
+                body: bodyData
+            });
+            if (resp.ok == true) {
+                let textData = await resp.text();
+                console.log(textData);
+                return textData;
+            }
+        }
+        </script>
+}

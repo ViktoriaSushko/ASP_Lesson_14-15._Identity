@@ -1,8 +1,33 @@
-﻿@{
+﻿@using ASP_Lesson_14.Models;
+@model IEnumerable<Product>
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="col-3">
 </div>
+<div class="col">
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
+    @foreach (var product in Model)
+    {
+       <div class="card m-2" style="width: 18rem;">
+@if(product.Images.Any()){
+                <img src="data:image/*;base64,@(Convert.ToBase64String(product.Images.FirstOrDefault().ImageData))" alt="@product.Name" class="card-img-top" style="height: 200px; object-fit: cover;">
+}
+else{
+                <img src="~/images/no-img.jpg" alt="No Image" class="card-img-top" style="height: 200px; object-fit: cover;">
+}               
+                <div class="card-body">
+                    <h5 class="card-title">@product.Brand.BrandName @product.Name</h5>
+                    <p class="card-text">@product.Description</p>
+                    <p class="card-text">Price: @product.Price.ToString("C")</p>
+                    <a href="#"  class="btn btn-primary">Add to Cart</a>
+                </div>
+</div>
+}
+            </div>
+ </div>
+    
+ 
+

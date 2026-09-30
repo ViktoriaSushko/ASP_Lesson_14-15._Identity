@@ -1,0 +1,11 @@
+﻿@using ASP_Lesson_14.Models
+@model IEnumerable<Product>
+@{
+    var ProductsSL = new SelectList(Model, nameof(Product.Id), nameof(Product.Name));
+}
+<div class="mb-3" id="productsDiv">
+    <label for="productId" class="control-label">Products</label>
+    <select name="productId" id="productId" class="form-control" asp-items="ProductsSL">
+        <option value="0">All</option>
+    </select>
+</div>

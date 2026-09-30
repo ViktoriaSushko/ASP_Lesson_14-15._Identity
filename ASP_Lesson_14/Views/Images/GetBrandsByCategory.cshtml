@@ -1,0 +1,11 @@
+﻿@using ASP_Lesson_14.Models;
+@model IEnumerable<Brand>
+@{
+    var BrandsSL = new SelectList(Model, nameof(Brand.Id), nameof(Brand.BrandName));
+}
+<div class="mb-3" id="brandsDiv">
+    <label for="brandId" class="control-label">Brands</label>
+    <select name="brandId" id="brandId" class="form-control" asp-items="BrandsSL" onchange="onBrandChange(event)">
+        <option value="0">All</option>
+    </select>
+</div>

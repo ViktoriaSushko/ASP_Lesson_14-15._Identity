@@ -22,8 +22,8 @@ namespace ASP_Lesson_14.Controllers
         // GET: Products
         public async Task<IActionResult> Index()
         {
-            var shopDbContext = _context.Products.Include(p => p.Brand).Include(p => p.Category);
-            return View(await shopDbContext.ToListAsync());
+            var products = _context.Products.Include(p => p.Brand).Include(p => p.Category);
+            return View(await products.ToListAsync());
         }
 
         // GET: Products/Details/5

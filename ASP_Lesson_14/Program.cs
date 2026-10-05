@@ -1,6 +1,7 @@
 ﻿using ASP_Lesson_14.AutomapperProfile;
 using ASP_Lesson_14.Models.Data;
 using ASP_Lesson_14.Models.DTO.Claims.CustomerPolicies;
+using ASP_Lesson_14.ModelBinders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -62,6 +63,14 @@ builder.Services.AddAuthorization(configure =>
         configurePolicy.Requirements.Add(new AllowedAgeRequirement { MinAge=18});
     });
 });
+builder.Services.AddControllersWithViews(options =>
+{
+    options.ModelBinderProviders.Insert(0, new CartBinderProvider());
+});
+//add session
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -77,6 +86,9 @@ app.UseRouting();
 //Authentication
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseSession();
+
+
 
 app.MapStaticAssets();
 
@@ -89,5 +101,30 @@ app.MapControllerRoute(
     pattern: "category/GetChildCategories/{parentId:int?}",
     defaults: new { controller = "Category", action = "GetChildCategories" }
     );
+//app.Run(async (context) =>
+//{
+//    if (context.Request.Cookies.ContainsKey("name"))
+//    {
+//        string? name = context.Request.Cookies["name"];
+//        await context.Response.WriteAsync($"Hello {name}!");
+//    }
+//    else
+//    {
+//        context.Response.Cookies.Append("name", "Vika");
+//        await context.Response.WriteAsync("Hello World!");
+//    }
 
+//});
+//app.Run(async (context) =>
+//{
+
+//    if (context.Session.Keys.Contains("name"))
+//        await context.Response.WriteAsync(
+//            $"Hello {context.Session.GetString("name")}!");
+//    else
+//    {
+//        context.Session.SetString("name", "Vika");
+//        await context.Response.WriteAsync("Hello World!");
+//    }
+//});
 app.Run();

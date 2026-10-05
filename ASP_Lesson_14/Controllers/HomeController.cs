@@ -17,9 +17,13 @@ namespace ASP_Lesson_14.Controllers
             _context = context;
            
         }
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? categoryId)
         {
-            var products = _context.Products.Include(p => p.Brand).Include(p => p.Category).Include(p => p.Images);
+            IQueryable<Product> products = _context.Products.Include(p => p.Brand).Include(p => p.Category).Include(p => p.Images);
+            if(categoryId != null)
+            {
+                products = products.Where(p => p.CategoryId == categoryId);
+            }
             return View(await products.ToListAsync());
         }
 

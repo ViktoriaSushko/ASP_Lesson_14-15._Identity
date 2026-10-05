@@ -1,0 +1,58 @@
+﻿@using ASP_Lesson_14.Models;
+@model IEnumerable<Category>
+   <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <div class="container-fluid">
+
+            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between" id="navbarNavDropdown">
+                <ul class="navbar-nav flex-grow-1">
+                    @foreach(Category mainCategory in Model){
+                    @if(mainCategory.ChildCategories is not null && mainCategory.ChildCategories.Any()){
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-dark" id="navbarDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false" asp-controller="Home" asp-action="Index"
+                            asp-route-categoryId="@mainCategory.Id">
+                            @mainCategory.CategoryName
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            @foreach(Category childCategory in mainCategory.ChildCategories){
+                            @if(childCategory.ChildCategories is not null && childCategory.ChildCategories.Any()){
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" asp-area="" role="button" data-bs-toggle="dropdown"
+                                    aria-expanded="false" asp-controller="Home" asp-action="Index"
+                                    asp-route-categoryId="@childCategory.Id">@childCategory.CategoryName</a>
+                                <ul class="dropdown-menu">
+                                    @foreach(Category grandChildCategory in childCategory.ChildCategories){
+                                    <span>&nbsp;&nbsp;</span>
+                                    <li style="display:list-item">
+                                        <a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="Index"
+                                            asp-route-categoryId="@grandChildCategory.Id">@grandChildCategory.CategoryName</a>
+                                    </li>
+                                    }
+                                </ul>
+                            </li>
+                            }
+                            else{
+
+                            <li>
+                                <a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="Index"
+                                    asp-route-categoryId="@childCategory.Id">@childCategory.CategoryName</a>
+                            </li>
+                            }
+                            }
+                        </ul>
+                    </li>
+                    }
+
+
+                    else{
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index"
+                            asp-route-categoryId="@mainCategory.Id">@mainCategory.CategoryName</a>
+                    </li>
+                    }
+                    }
+
+                </ul>
+            </div>
+        </div>
+    </nav>

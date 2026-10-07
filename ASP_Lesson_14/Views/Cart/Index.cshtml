@@ -61,6 +61,11 @@
             </tr>
         </tbody>
     </table>
+    <form asp-action="Buy" asp-controller="Cart" method="post">
+        <input type="hidden" name="cartId" value="@Model.Id"/>
+        <input type="hidden" name="returnUrl" value="@Model.ReturnUrl"/>        
+    <button type="submit"  class="btn btn-danger">Buy Now</button>
+</form>
 </div>
 @section Scripts {
     <script type="text/javascript">

@@ -2,17 +2,29 @@
 using ASP_Lesson_14.Models;
 using ASP_Lesson_14.Models.Data;
 using ASP_Lesson_14.Models.ViewModels.Cart;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
+using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
+using System.Text;
+using ASP_Lesson_14.Services;
 namespace ASP_Lesson_14.Controllers
 {
     public class CartController : Controller
     {
         private readonly ShopDbContext _context;
-        public CartController(ShopDbContext context)
+        private readonly ILogger<CartController> _logger;
+        private readonly IEmailSenderCart emailSender;
+        private readonly UserManager<ShopUser> userManager;
+        private readonly SignInManager<ShopUser> signInManager;
+        public CartController(ShopDbContext context, ILogger<CartController> logger, IEmailSenderCart emailSender, UserManager<ShopUser> userManager, SignInManager<ShopUser> signInManager)
         {
             _context = context;
+            _logger = logger;
+            this.emailSender = emailSender;
+            this.userManager = userManager;
+            this.signInManager = signInManager;
         }
         //public IActionResult Index(string? returnUrl)
           public IActionResult Index(Cart cart,string? returnUrl)//modelBinders->CartModelBinder->CartModelBinderProvider
@@ -142,6 +154,69 @@ namespace ASP_Lesson_14.Controllers
                 return Redirect("/images/no-img.jpg");
 
             return File(data, "image/jpeg");   // браузер сам определит реальный формат
+        }
+        [HttpPost]
+        public async Task<IActionResult> Buy(int cartId,string? returnUrl)
+        {
+            if (!User.Identity?.IsAuthenticated ?? false)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            var cart = GetCart();
+            if (!cart.CartItems.Any())
+            {
+                TempData["OrderMessage"] = "Your cart is empty. Please add items to your cart before placing an order.";
+                TempData["OrderMessageType"] = "warning";
+                return RedirectToAction("Index", "Home");
+            }
+            var user = await userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                TempData["OrderMessage"] = "Не вдалося отримати інформацію про користувача";
+                TempData["OrderMessageType"] = "danger";
+                return RedirectToAction("Login", "Account");
+            }
+            var email = user.Email;
+            if(string.IsNullOrWhiteSpace(email))
+            {
+                TempData["OrderMessage"] = "Не вдалося отримати електронну пошту користувача";
+                TempData["OrderMessageType"] = "danger";
+                return RedirectToAction("Index", "Home");
+            }
+            try
+            {
+                var body = new StringBuilder();
+                body.AppendLine($"<h2>Вітаємо, {user.UserName}!</h2>");
+                body.Append("<table style='border-collapse: collapse; width: 100%;'>");
+                body.Append("<tr style='background-color: #f2f2f2;'><th style='border: 1px solid #ddd; padding: 8px;'>Product</th><th style='border: 1px solid #ddd; padding: 8px;'>Price</th><th style='border: 1px solid #ddd; padding: 8px;'>Quantity</th><th style='border: 1px solid #ddd; padding: 8px;'>Total</th></tr>");
+                foreach (var item in cart.CartItems)
+                {
+                    body.Append("<tr>");
+                    body.Append($"<td style='border: 1px solid #ddd; padding: 8px;'>{item.Name}</td>");
+                    body.Append($"<td style='border: 1px solid #ddd; padding: 8px;'>{item.Price:C}</td>");
+                    body.Append($"<td style='border: 1px solid #ddd; padding: 8px;'>{item.Count}</td>");
+                    body.Append($"<td style='border: 1px solid #ddd; padding: 8px;'>{item.TotalPrice:C}</td>");
+                    body.Append("</tr>");
+                }
+                body.Append("<tr style='background-color: #f2f2f2;'><td colspan='3' style='border: 1px solid #ddd; padding: 8px; text-align: right;'><strong>Total:</strong></td><td style='border: 1px solid #ddd; padding: 8px;'><strong>" + cart.GetTotalPrice().ToString("C") + "</strong></td></tr>");
+                body.Append("</table>");
+                await emailSender.SendAsync(
+                    from: email,
+                    to: email,
+                    subject: $"Замовлення від {DateTime.Now:g}",
+                    body: body.ToString()
+                    );
+                SetCart(new Cart(new List<CartItem>()));
+                TempData["OrderMessage"] = "Замовлення успішно оформлено!";
+                TempData["OrderMessageType"] = "success";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Не вдалося відправити електронний лист для користувача {Email}", email);
+                TempData["OrderMessage"] = "Помилка при оформленні замовлення.";
+                TempData["OrderMessageType"] = "danger";
+            }
+            return RedirectToAction("Index", "Home");
         }
     }
 }

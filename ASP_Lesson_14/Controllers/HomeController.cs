@@ -24,6 +24,8 @@ namespace ASP_Lesson_14.Controllers
             {
                 products = products.Where(p => p.CategoryId == categoryId);
             }
+            ViewBag.OrderMessage = TempData["OrderMessage"];
+            ViewBag.OrderMessageType = TempData["OrderMessageType"];
             return View(await products.ToListAsync());
         }
 

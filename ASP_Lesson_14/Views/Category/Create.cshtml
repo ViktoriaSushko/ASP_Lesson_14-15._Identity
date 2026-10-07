@@ -20,7 +20,7 @@
             <div class="form-group">
                 <label  class="control-label">Choose category: </label>
                 <select name="ParentCategoryId[]" class="form-control" asp-items="ViewBag.ParentCategoryId" onchange="getChildCategories(event)">
-                    <option value=0>None</option>
+                    <option value="0">None</option>
                 </select>
             </div>
 
@@ -41,20 +41,21 @@
     }
 }
 <script type="text/javascript">
-    async function getChildCategories(e){
-        let parentId=e.target.value;
-        let resp=await fetch(`/category/GetChildCategories?parentId=${parentId}`);
-        if(resp.ok==true){
-            let text=await resp.text();
+    async function getChildCategories(e) {
+        let parentId = e.target.value;
+        let resp = await fetch(`/categories/GetChildCategories?parentId=${parentId}`);
+        if (resp.ok === true) {
+            let text = await resp.text();
             console.log(text);
-            let currentSelect=e.target.parentElement;
-            let div=document.createElement("div");
-            div.innerHTML=text;
-            let nextElem=currentSelect.nextElementSibling;
-            if(nextElem.id=="sbmBtnGr")
-            currentSelect.after(div.firstChild);
+            let currentSelect = e.target.parentElement;
+            let div = document.createElement("div");
+            div.innerHTML = text;
+            let nextElem = currentSelect.nextElementSibling;
+            if (nextElem.id == "sbmBtnGrp")
+                currentSelect.after(div.firstChild);
             else
-            nextElem.replaceWith(div.firstChild);
+                nextElem.replaceWith(div.firstChild);
+
         }
     }
 </script>

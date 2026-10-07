@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using ASP_Lesson_14.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,7 @@ builder.Services.AddTransient<IAuthorizationHandler, AllowedAgeHandler>();
 //IdentityDbContext
 string connStr = builder.Configuration.GetConnectionString("DefaultConnection")??throw new InvalidOperationException("Connection string wasn't provided!");
 builder.Services.AddDbContext<ShopDbContext>(options => options.UseSqlServer(connStr));
+builder.Services.AddScoped<IEmailSenderCart, EmailSenderCart>();
 builder.Services.AddIdentity<ShopUser, IdentityRole>(options =>
 {
     options.Password.RequireDigit = false;

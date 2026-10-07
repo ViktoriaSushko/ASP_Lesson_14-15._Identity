@@ -55,21 +55,17 @@ public class CategoryController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Id,CategoryName,ParentCategoryId")] Category category, int[] parentCategoryId)
+    public async Task<IActionResult> Create([Bind("Id,CategoryName")] Category category, int[] parentCategoryId)
     {
         if (ModelState.IsValid)
         {
             if (parentCategoryId.Length == 1 && parentCategoryId[0] == 0)
                 category.ParentCategoryId = null;
             else
-
                 if (parentCategoryId[parentCategoryId.Length - 1] != 0)
-
                     category.ParentCategoryId = parentCategoryId[parentCategoryId.Length - 1];
                 else
-
                     category.ParentCategoryId = parentCategoryId[parentCategoryId.Length - 2];
-
             _context.Add(category);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -95,6 +91,7 @@ public class CategoryController : Controller
         {
             return NotFound();
         }
+        ViewData["ParentCategoryId"] = new SelectList(_context.Categories, "Id", "CategoryName", category.ParentCategoryId);
         return View(category);
     }
 
